@@ -5,6 +5,18 @@
 #include <iostream>
 #include "Activity.h"
 
+string labelToString(Label l) {
+    switch (l) {
+        case Label::Sport: return "Sport";
+        case Label::Wellness: return "Wellness";
+        case Label::Light_Activity: return "Light Activity";
+        case Label::Fun: return "Fun";
+        case Label::Work: return "Work";
+        case Label::Other: return "Other";
+    }
+    return "Generic";
+}
+
 Activity::Activity() {
     title = "Untitled activity";
     description = "";
@@ -24,6 +36,11 @@ void Activity::setTitle(const string& newTitle) {
 void Activity::setDescription(const string& newDescr) {
     description = newDescr;
 }
+
+void Activity::setLabel(Label l) {
+    label = l;
+}
+
 
 void Activity::setTime(int h, int min, int sec, bool mess) {
     if (!setHours(h) && mess)
@@ -76,6 +93,11 @@ string Activity::getTitle() const {
 string Activity::getDescription() const {
     return description;
 }
+
+string Activity::getLabel() const {
+    return labelToString(label);
+}
+
 
 Time Activity::getTime() const {
     return actTime;

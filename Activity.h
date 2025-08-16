@@ -15,6 +15,17 @@ struct Time {
     int seconds;
 };
 
+enum class Label {
+    Sport,
+    Wellness,
+    Work,
+    Light_Activity,
+    Fun,
+    Other
+};
+
+string labelToString(Label l);
+
 class Activity {
 public:
 
@@ -23,12 +34,14 @@ public:
 
     void setTitle (const string& newTitle);
     void setDescription  (const string& newDescr);
+    void setLabel (Label l);
     void setTime (int h, int min, int sec, bool mess = true);
     bool setHours (int h);
     bool setMinutes (int m);
     bool setSeconds (int s);
     string getTitle () const;
     string getDescription () const;
+    string getLabel () const;
     Time getTime() const;
     int getHours () const;
     int getMinutes () const;
@@ -38,6 +51,7 @@ private:
     string title;
     string description;
     Time actTime;
+    Label label;
 };
 
 
