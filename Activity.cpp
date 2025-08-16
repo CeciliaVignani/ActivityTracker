@@ -8,11 +8,13 @@
 Activity::Activity() {
     title = "Untitled activity";
     description = "";
+    setTime(0,0,0);
 }
 
-Activity::Activity(const string& title) {
+Activity::Activity(const string& title, const string& description, int hrs, int mins, int secs) {
     this->title = title;
-
+    this->description = description;
+    setTime(hrs, mins, secs);
 }
 
 void Activity::setTitle(const string& newTitle) {
@@ -23,6 +25,50 @@ void Activity::setDescription(const string& newDescr) {
     description = newDescr;
 }
 
+void Activity::setTime(int h, int min, int sec, bool mess) {
+    if (!setHours(h) && mess)
+        cerr << "Invalid value for hours" << endl;
+    if (!setMinutes(min) && mess)
+        cerr << "Invalid value for minutes" << endl;
+    if (!setSeconds(sec) && mess)
+        cerr << "Invalid value for hours" << endl;
+}
+
+
+bool Activity::setHours(int h) {
+    if (h < 0 || h > 23) {
+        actTime.hours = 0;
+        return false;
+    }
+    else {
+        actTime.hours = h;
+        return true;
+    }
+}
+
+
+bool Activity::setMinutes(int m) {
+    if (m < 0 || m > 59) {
+        actTime.minutes = 0;
+        return false;
+    }
+    else {
+        actTime.minutes = m;
+        return true;
+    }
+}
+
+bool Activity::setSeconds(int s) {
+    if (s < 0 || s > 59) {
+        actTime.seconds = 0;
+        return false;
+    }
+    else {
+        actTime.seconds = s;
+        return true;
+    }
+}
+
 string Activity::getTitle() const {
     return title;
 }
@@ -31,3 +77,19 @@ string Activity::getDescription() const {
     return description;
 }
 
+Time Activity::getTime() const {
+    return actTime;
+}
+
+
+int Activity::getHours() const {
+    return actTime.hours;
+}
+
+int Activity::getMinutes() const {
+    return actTime.minutes;
+}
+
+int Activity::getSeconds() const {
+    return actTime.seconds;
+}
