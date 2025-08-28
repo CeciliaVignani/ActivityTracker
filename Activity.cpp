@@ -21,12 +21,14 @@ Activity::Activity() {
     title = "Untitled activity";
     description = "";
     setTime(0,0,0);
+    label = Label::Generic;
 }
 
 Activity::Activity(const string& title, const string& description, int hrs, int mins, int secs) {
     this->title = title;
     this->description = description;
     setTime(hrs, mins, secs);
+    label = Label::Generic;
 }
 
 void Activity::setTitle(const string& newTitle) {

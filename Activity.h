@@ -21,7 +21,8 @@ enum class Label {
     Work,
     Light_Activity,
     Fun,
-    Other
+    Other,
+    Generic
 };
 
 string labelToString(Label l);

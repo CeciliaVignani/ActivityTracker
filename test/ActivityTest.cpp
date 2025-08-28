@@ -25,6 +25,9 @@ TEST(ActivityTest, ConstructorTest) {
 TEST(ActivityTest, SetAndGetAttributes) {
     Activity activity;
     activity.setTime(-1, 99, 70, false);
+    EXPECT_FALSE(activity.getHours());
+    EXPECT_FALSE(activity.getMinutes());
+    EXPECT_FALSE(activity.getSeconds());
     EXPECT_EQ (activity.getHours(), 0);
     EXPECT_EQ (activity.getMinutes(), 0);
     EXPECT_EQ (activity.getSeconds(), 0);
@@ -34,4 +37,16 @@ TEST(ActivityTest, SetAndGetAttributes) {
     EXPECT_EQ (t.hours, 0);
     EXPECT_EQ (t.minutes, 23);
     EXPECT_EQ (t.seconds, 55);
+}
+
+
+TEST(ActivityTest, StringsAndLabel) {
+    Activity activity;
+    EXPECT_EQ(activity.getLabel(), "Generic");
+    activity.setTitle("Activity Title");
+    activity.setDescription("Activity Description");
+    EXPECT_EQ(activity.getTitle(), "Activity Title");
+    EXPECT_EQ(activity.getDescription(), "Activity Description");
+    activity.setLabel(Label::Wellness);
+    EXPECT_EQ(activity.getLabel(), "Wellness");
 }
