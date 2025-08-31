@@ -4,10 +4,16 @@
 
 #include "Register.h"
 
-string dateToString(Date date) {
+string dateToString(const Date &date) {
+    string stringDate;
+    if (date.day < 10)
+        stringDate = "0" + to_string(date.day);
+    else stringDate = to_string(date.day);
     if (date.month < 10)
-        return to_string(date.day) + "/0" + to_string(date.month) + "/" + to_string(date.year);
-    return to_string(date.day) + "/" + to_string(date.month) + "/" + to_string(date.year);
+        stringDate = stringDate + "/0" + to_string(date.month);
+    else stringDate = stringDate + "/" + to_string(date.month);
+    stringDate = stringDate + "/" + to_string(date.year);
+    return stringDate;
 }
 
 int daysInMonth(int m, int y) {
@@ -23,13 +29,13 @@ int daysInMonth(int m, int y) {
     return 29;
 }
 
-Register::Register(int d, int m, int y) {
-    setDate(d, m, y);
+Register::Register(int d, int m, int y, bool mess) {
+    setDate(d, m, y, mess);
 }
 
 void Register::setDate(int d, int m, int y, bool mess) {
     if (!setYear(y) && mess)
-        cerr << "invalid value for month, set to 2000" << endl;
+        cerr << "invalid value for year, set to 2000" << endl;
     if (!setMonth(m) && mess)
         cerr << "invalid value for month, set to 1" << endl;
     if (!setDay(d) && mess)
@@ -68,10 +74,10 @@ bool Register::setYear(int y) {
     }
 }
 
-void Register::addActivity(Activity act) {
+void Register::addActivity(const Activity &act) {
     auto it = activities.begin();
     bool found = false;
-    while (it != activities.end() && !found) {
+    while (it != activities.end()) {
         if (it->getHours() > act.getHours()) {
             activities.insert(it, act);
             return;
@@ -87,18 +93,22 @@ void Register::addActivity(Activity act) {
     activities.insert(it, act);
 }
 
-int Register::getDay() {
+int Register::getDay() const {
     return date.day;
 }
 
-int Register::getMonth() {
+int Register::getMonth() const {
     return date.month;
 }
 
-int Register::getYear() {
+int Register::getYear() const {
     return date.year;
 }
 
-Date Register::getDate() {
+Date Register::getDate() const {
     return date;
+}
+
+vector<Activity> Register::getVector() {
+    return activities;
 }

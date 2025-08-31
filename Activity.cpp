@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Activity.h"
 
-string labelToString(Label l) {
+string labelToString(const Label &l) {
     switch (l) {
         case Label::Sport: return "Sport";
         case Label::Wellness: return "Wellness";
@@ -17,11 +17,29 @@ string labelToString(Label l) {
     return "Generic";
 }
 
+string timeToString(const Time &t) {
+    string stringTime;
+    if (t.hours < 10)
+        stringTime = "0" + to_string(t.hours);
+    else stringTime = to_string(t.hours);
+    if (t.minutes < 10)
+        stringTime = stringTime + ":0" + to_string(t.minutes);
+    else stringTime = stringTime + ":" + to_string(t.minutes);
+    if (t.seconds < 10)
+        stringTime = stringTime + ":0" + to_string(t.seconds);
+    else stringTime = stringTime + ":" + to_string(t.seconds);
+    return stringTime;
+}
+
+
 Activity::Activity() {
     title = "Untitled activity";
     description = "";
     setTime(0,0,0);
     label = Label::Generic;
+    actTime.hours = 0;
+    actTime.minutes = 0;
+    actTime.seconds = 0;
 }
 
 Activity::Activity(const string& title, const string& description, int hrs, int mins, int secs) {

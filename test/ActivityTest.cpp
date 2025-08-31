@@ -5,6 +5,23 @@
 #include "gtest/gtest.h"
 #include "../Activity.h"
 
+TEST(ActivityTest, LabelAndTimeToStringMethods) {
+    Label lab = Label::Sport;
+    EXPECT_EQ (labelToString(lab), "Sport");
+
+    Time testTime;
+    testTime.hours = 1;
+    testTime.minutes = 9;
+    testTime.seconds = 22;
+    EXPECT_EQ (timeToString(testTime), "01:09:22");
+
+    testTime.hours = 12;
+    testTime.minutes = 29;
+    testTime.seconds = 4;
+    EXPECT_EQ (timeToString(testTime), "12:29:04");
+}
+
+
 TEST(ActivityTest, ConstructorTest) {
     Activity activity;
     EXPECT_EQ (activity.getTitle(), "Untitled activity");
@@ -25,9 +42,6 @@ TEST(ActivityTest, ConstructorTest) {
 TEST(ActivityTest, SetAndGetAttributes) {
     Activity activity;
     activity.setTime(-1, 99, 70, false);
-    EXPECT_FALSE(activity.getHours());
-    EXPECT_FALSE(activity.getMinutes());
-    EXPECT_FALSE(activity.getSeconds());
     EXPECT_EQ (activity.getHours(), 0);
     EXPECT_EQ (activity.getMinutes(), 0);
     EXPECT_EQ (activity.getSeconds(), 0);

@@ -25,7 +25,8 @@ enum class Label {
     Generic
 };
 
-string labelToString(Label l);
+string labelToString(const Label &l);
+string timeToString(const Time &t);
 
 class Activity {
 public:
