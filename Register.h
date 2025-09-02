@@ -33,6 +33,7 @@ public:
     bool setMonth (int m);
     bool setYear (int y);
     void addActivity (const Activity &act);
+    bool removeActivity (const int i);
 
     int getDay() const;
     int getMonth() const;

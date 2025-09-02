@@ -93,6 +93,13 @@ void Register::addActivity(const Activity &act) {
     activities.insert(it, act);
 }
 
+bool Register::removeActivity(const int i) {
+    if (i >= 0 && i < activities.size()) {
+        activities.erase(activities.begin() + i);
+        return true;
+    }else return false;
+}
+
 int Register::getDay() const {
     return date.day;
 }

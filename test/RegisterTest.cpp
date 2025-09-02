@@ -50,4 +50,6 @@ TEST(RegisterTest, ConstructorTest) {
     reg.addActivity(a2);
     EXPECT_EQ (reg.getVector()[0].getTitle(), a2.getTitle());
     EXPECT_EQ (reg.getVector()[1].getDescription(), a1.getDescription());
+    EXPECT_FALSE(reg.removeActivity(4));
+    EXPECT_TRUE (reg.removeActivity(1));
 }
