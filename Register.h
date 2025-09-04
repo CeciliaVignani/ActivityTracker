@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 #include "Activity.h"
@@ -33,14 +32,14 @@ public:
     bool setMonth (int m);
     bool setYear (int y);
     void addActivity (const Activity &act);
-    bool removeActivity (const int i);
+    bool removeActivity (const int& i);
 
     int getDay() const;
     int getMonth() const;
     int getYear() const;
     Date getDate() const;
 
-    vector<Activity> getVector();
+    const vector<Activity>& getVector() const;
 
 private:
     Date date{};

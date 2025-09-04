@@ -93,7 +93,7 @@ void Register::addActivity(const Activity &act) {
     activities.insert(it, act);
 }
 
-bool Register::removeActivity(const int i) {
+bool Register::removeActivity(const int& i) {
     if (i >= 0 && i < activities.size()) {
         activities.erase(activities.begin() + i);
         return true;
@@ -116,6 +116,6 @@ Date Register::getDate() const {
     return date;
 }
 
-vector<Activity> Register::getVector() {
+const vector<Activity>& Register::getVector() const {
     return activities;
 }

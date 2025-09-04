@@ -2,7 +2,7 @@
 // Created by vigna on 28/08/2025.
 //
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "../Register.h"
 
 TEST(RegisterTest, DateToStringMethod) {

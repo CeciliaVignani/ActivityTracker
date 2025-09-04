@@ -3,7 +3,7 @@ project(ActivityTracker)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(SOURCE_FILES Activity.cpp Register.cpp)
+set(SOURCE_FILES Activity.cpp Register.cpp Utils.cpp)
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 add_library(${CMAKE_PROJECT_NAME}_lib ${SOURCE_FILES})
