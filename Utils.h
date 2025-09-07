@@ -9,8 +9,19 @@
 #include "Activity.h"
 #include "Register.h"
 #include <FL/Fl_Browser.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Box.H>
+#include <FL/Fl_Pack.H>
 
 using namespace std;
+
+struct context {
+    Register *r;
+    Fl_Window* win;
+    Fl_Browser* b;
+    Fl_Group* deleteg;
+};
 
 bool operator< (const Date& a, const Date& b);
 
@@ -18,6 +29,7 @@ void populateBrowser(const Register& r, Fl_Browser& b);
 string getPreview (const Activity& a, int maxLen = 30);
 
 void newAct_cb(Fl_Widget* w, void* data);
+void removeButton_cb(Fl_Widget* w, void* data);
 
 
 

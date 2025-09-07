@@ -26,7 +26,17 @@ string getPreview (const Activity& a, int maxLen) {
 
 void newAct_cb(Fl_Widget *w, void *data) {
     Fl_Browser* browser = static_cast<Fl_Browser*>(data);
-    cout << "Pulsante New premuto" << endl;
     //TODO implementare callback
+}
+
+void removeButton_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context*>(data);
+
+    ct->b->resize(5, 35, 940,660);
+    w->label("Cancel");
+    ct->deleteg->show();
+
+    ct->win->redraw();
+    //TODO implement callback for button cancel
 }
 

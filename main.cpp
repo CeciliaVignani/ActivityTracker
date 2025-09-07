@@ -1,10 +1,6 @@
 #include <iostream>
 #include <ctime>
-#include <map>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Browser.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Button.H>
+//#include <map>
 
 #include "Activity.h"
 #include "Register.h"
@@ -16,18 +12,24 @@ int main() {
     int day = local->tm_mday;
     int month = local->tm_mon +1;
     int year = local->tm_year + 1900;
-    Date today;
-    today.day = day;
-    today.month = month;
-    today.year = year;
+    Date today {day, month, year};
+
+    Activity act1;
+    Activity act2("Title", "Long description to let it cut for the previwe", 0, 2, 30);
 
     Register reg(day, month, year);
+    reg.addActivity(act1);
+    reg.addActivity(act2);
     Fl_Window window (1000, 750, "ACTIVITY TRACKER");
     string dateLabel = dateToString(today);
     Fl_Box* dateBox = new Fl_Box(5, 5, 990, 30, dateLabel.c_str());
     dateBox->labelfont(FL_BOLD);
     Fl_Browser* browser = new Fl_Browser(5, 35, 990, 660);
-    browser->add("Registro vuoto. Inserisci la tua prima attività!");
+    window.resizable(browser);
+    if (reg.getVector().size() == 0)
+        browser->add("Registro vuoto. Inserisci la tua prima attività!");
+    else
+        populateBrowser(reg,*browser);
 
     Fl_Button* prevDay = new Fl_Button(5,5, 60, 30, "<<");
     Fl_Button* nextDay = new Fl_Button(935, 5, 60, 30, ">>");
@@ -43,8 +45,20 @@ int main() {
     removeAct->align(FL_ALIGN_CENTER);
     labelFilter->align(FL_ALIGN_CENTER);
     orderBy->align(FL_ALIGN_CENTER);
+
+    Fl_Group* group = new Fl_Group(945, 35, 50, 660);
+    group->begin();
+    int n = reg.getVector().size();
+    for (int i = 0; i < n; i++)
+        Fl_Button* deleteB = new Fl_Button(945, 35 + (50*i), 50, 50, "X");
+    group->end();
+    group->hide();
+
+    context* ct = new context{&reg, &window, browser, group};
+
     newAct->callback(newAct_cb, browser);
-    //TODO implementare callback tasti
+    //TODO implement callback for button new
+    removeAct->callback(removeButton_cb, ct);
 
     window.end();
     window.show();
