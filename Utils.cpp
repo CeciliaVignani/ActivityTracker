@@ -27,9 +27,61 @@ string getPreview (const Activity& a, int maxLen) {
 }
 
 void newAct_cb(Fl_Widget *w, void *data) {
-    Fl_Browser* browser = static_cast<Fl_Browser*>(data);
-    //TODO implementare callback
+    context* ct = static_cast<context*>(data);
+
+    Fl_Input* titleInput = static_cast<Fl_Input*>(ct->newAct->child(0));
+    titleInput->value("");
+    Fl_Multiline_Input* descriptionInput = static_cast<Fl_Multiline_Input *>(ct->newAct->child(1));
+    descriptionInput->value("");
+    Fl_Spinner* hoursInput = static_cast<Fl_Spinner *>(ct->newAct->child(2));
+    hoursInput->value(0);
+    Fl_Spinner* minutesInput = static_cast<Fl_Spinner *>(ct->newAct->child(3));
+    minutesInput->value(0);
+    Fl_Spinner* secondsInput = static_cast<Fl_Spinner *>(ct->newAct->child(4));
+    secondsInput->value(0);
+    ct->newAct->show();
+
+    ct->ps = new parameters{titleInput, descriptionInput, hoursInput, minutesInput, secondsInput};
+
+    ct->newAct->child(5)->callback(createNew_cb, ct);
+    ct->newAct->child(6)->callback(cancelNew_cb, ct);
 }
+
+void createNew_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+
+    string texts[2] = {ct->ps->it->value(), ct->ps->id->value()};
+
+    Activity newActivity(texts[0], texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value());
+    ct->r->addActivity(newActivity);
+    populateBrowser(*ct->r, *ct->b);
+    int n = ct->r->getVector().size();
+    Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
+    ct->deleteg->add(deleteB);
+    ct->deleteButtons[deleteB] = n-1;
+    deleteB->callback(deleteButton_cb, ct);
+
+    ct->newAct->hide();
+}
+
+void cancelNew_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+
+    int choice = fl_choice("Are you sure you want to cancel the creation of a new activity? All set data will be lost.\nInstead, you can create an empty activity and modify it in future", "Delete", "Create empty", 0);
+    if (choice == 1) {
+        Activity newActivity;
+        ct->r->addActivity(newActivity);
+        populateBrowser(*ct->r, *ct->b);
+        int n = ct->r->getVector().size();
+        Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
+        ct->deleteg->add(deleteB);
+        ct->deleteButtons[deleteB] = n-1;
+        deleteB->callback(deleteButton_cb, ct);
+    }
+    ct->newAct->hide();
+}
+
+
 
 void removeButton_cb(Fl_Widget *w, void *data){
     context* ct = static_cast<context*>(data);

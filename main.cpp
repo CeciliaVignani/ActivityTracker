@@ -65,9 +65,32 @@ int main() {
     group->end();
     group->hide();
 
-    //Fl_Window* popup = new Fl_Window()
+    Fl_Window* popup = new Fl_Window(700,520, "New Activity");
+    ct->newAct = popup;
+    popup->begin();
+    Fl_Input* insertTitle = new Fl_Input(130, 20, 500, 40, "Title: " );
+    Fl_Multiline_Input* insertDescription = new Fl_Multiline_Input(130, 80, 500, 140, "Description: ");
+    Fl_Spinner* insertHour = new Fl_Spinner(190, 270, 70, 50);
+    insertHour->type(FL_INT_INPUT);
+    insertHour->range(0, 23);
+    insertHour->value(0);
+    insertHour->step(1);
+    Fl_Spinner* insertMinutes = new Fl_Spinner(290, 270, 70, 50);
+    insertMinutes->type(FL_INT_INPUT);
+    insertMinutes->range(0, 59);
+    insertMinutes->value(0);
+    insertMinutes->step(1);
+    Fl_Spinner* insertSeconds = new Fl_Spinner(390, 270, 70, 50);
+    insertSeconds->type(FL_INT_INPUT);
+    insertSeconds->range(0, 59);
+    insertSeconds->value(0);
+    insertSeconds->step(1);
+    Fl_Button* createB = new Fl_Button(430, 420, 100, 50, "Create");
+    Fl_Button* cancelB = new Fl_Button(550, 420, 100, 50, "Cancel");
+    popup->end();
+    popup->hide();
 
-    newAct->callback(newAct_cb, ct);
+    newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
 
     window.end();
