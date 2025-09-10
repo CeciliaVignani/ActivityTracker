@@ -17,15 +17,18 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Multiline_Input.H>
 #include <FL/Fl_Spinner.H>
+#include <FL/Fl_Menu_Button.H>
+#include <FL/Fl_Choice.H>
 
 using namespace std;
 
 struct parameters {
-    Fl_Input* it;
-    Fl_Multiline_Input* id;
+    Fl_Input* ititle;
+    Fl_Multiline_Input* idescr;
     Fl_Spinner* dh;
     Fl_Spinner* dm;
     Fl_Spinner* ds;
+    Fl_Choice* label;
 };
 
 struct context {
@@ -49,6 +52,7 @@ void createNew_cb(Fl_Widget* w, void* data);
 void cancelNew_cb(Fl_Widget* w, void* data);
 void removeButton_cb(Fl_Widget* w, void* data);
 void deleteButton_cb(Fl_Widget* w, void* data);
+void visualizeByLabel_cb(Fl_Widget* w, void* data);
 
 
 

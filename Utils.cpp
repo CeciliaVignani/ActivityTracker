@@ -29,31 +29,50 @@ string getPreview (const Activity& a, int maxLen) {
 void newAct_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context*>(data);
 
-    Fl_Input* titleInput = static_cast<Fl_Input*>(ct->newAct->child(0));
-    titleInput->value("");
-    Fl_Multiline_Input* descriptionInput = static_cast<Fl_Multiline_Input *>(ct->newAct->child(1));
-    descriptionInput->value("");
-    Fl_Spinner* hoursInput = static_cast<Fl_Spinner *>(ct->newAct->child(2));
-    hoursInput->value(0);
-    Fl_Spinner* minutesInput = static_cast<Fl_Spinner *>(ct->newAct->child(3));
-    minutesInput->value(0);
-    Fl_Spinner* secondsInput = static_cast<Fl_Spinner *>(ct->newAct->child(4));
-    secondsInput->value(0);
+    ct->ps->ititle->value("");
+    ct->ps->idescr->value("");
+    ct->ps->dh->value(0);
+    ct->ps->dm->value(0);
+    ct->ps->ds->value(0);
+    ct->ps->label->value(0);
     ct->newAct->show();
 
-    ct->ps = new parameters{titleInput, descriptionInput, hoursInput, minutesInput, secondsInput};
+    Fl_Button* createB = static_cast<Fl_Button *>(ct->newAct->child(5));
+    createB->callback(createNew_cb, ct);
+    Fl_Button* cancelB = static_cast<Fl_Button *>(ct->newAct->child(6));
+    cancelB->callback(cancelNew_cb, ct);
 
-    ct->newAct->child(5)->callback(createNew_cb, ct);
-    ct->newAct->child(6)->callback(cancelNew_cb, ct);
 }
 
 void createNew_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context *>(data);
 
-    string texts[2] = {ct->ps->it->value(), ct->ps->id->value()};
+    string texts[2] = {ct->ps->ititle->value(), ct->ps->idescr->value()};
+    Label actLabel = Label::Generic;
 
-    Activity newActivity(texts[0], texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value());
+    int ind = ct->ps->label->value();
+    switch (ind) {
+        case 1:
+            actLabel = Label::Fun;
+        case 2:
+            actLabel = Label::Light_Activity;
+            break;
+        case 3:
+            actLabel = Label::Sport;
+            break;
+        case 4:
+            actLabel = Label::Wellness;
+            break;
+        case 5:
+            actLabel = Label::Work;
+            break;
+        case 6:
+            actLabel = Label::Other;
+    }
+
+    Activity newActivity(texts[0],texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value(), actLabel);
     ct->r->addActivity(newActivity);
+
     populateBrowser(*ct->r, *ct->b);
     int n = ct->r->getVector().size();
     Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
@@ -112,8 +131,8 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
     auto act = ct->r->getVector()[index];
     string question = "Do you really want to remove the activity with title '" + act.getTitle() + "' ?";
 
-    int choice = fl_choice(question.c_str(), "Confirm", "Cancel", 0);
-    if (choice == 0) {
+    int choice = fl_choice(question.c_str(), "Cancel", "Confirm", 0);
+    if (choice == 1) {
         ct->r->removeActivity(index);
         populateBrowser(*ct->r, *ct->b);
         auto it = ct->deleteButtons.end();
@@ -125,4 +144,10 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
 
         ct->win->redraw();
     }
+}
+
+void visualizeByLabel_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context*>(data);
+
+
 }

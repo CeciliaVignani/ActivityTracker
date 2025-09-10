@@ -32,7 +32,7 @@ class Activity {
 public:
 
     Activity();
-    Activity(const string& title, const string& description, int hours, int minutes, int seconds);
+    Activity(const string& title, const string& description, int hours, int minutes, int seconds, Label label = Label::Generic);
 
     void setTitle (const string& newTitle);
     void setDescription  (const string& newDescr);

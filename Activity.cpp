@@ -42,11 +42,11 @@ Activity::Activity() {
     actTime.seconds = 0;
 }
 
-Activity::Activity(const string& title, const string& description, int hrs, int mins, int secs) {
+Activity::Activity(const string& title, const string& description, int hrs, int mins, int secs, Label lab) {
     this->title = title;
     this->description = description;
     setTime(hrs, mins, secs);
-    label = Label::Generic;
+    label = lab;
 }
 
 void Activity::setTitle(const string& newTitle) {

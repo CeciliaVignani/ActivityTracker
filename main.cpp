@@ -44,7 +44,15 @@ int main() {
     ct->allButtons.push_back(newAct);
     Fl_Button* removeAct = new Fl_Button(252, 695, 248, 50, "Remove");
     ct->allButtons.push_back(removeAct);
-    Fl_Button* labelFilter = new Fl_Button (500, 695, 248, 50, "Filter by Label");
+    Fl_Menu_Button* labelFilter = new Fl_Menu_Button (500, 695, 248, 50, "Filter by Label");
+    labelFilter->add("All");
+    labelFilter->add(labelToString(Label::Generic).c_str());
+    labelFilter->add(labelToString(Label::Fun).c_str());
+    labelFilter->add(labelToString(Label::Light_Activity).c_str());
+    labelFilter->add(labelToString(Label::Sport).c_str());
+    labelFilter->add(labelToString(Label::Wellness).c_str());
+    labelFilter->add(labelToString(Label::Work).c_str());
+    labelFilter->add(labelToString(Label::Other).c_str());
     ct->allButtons.push_back(labelFilter);
     Fl_Button* orderBy = new Fl_Button (748, 695, 247, 50, "Order by:");
     ct->allButtons.push_back(orderBy);
@@ -68,8 +76,9 @@ int main() {
     Fl_Window* popup = new Fl_Window(700,520, "New Activity");
     ct->newAct = popup;
     popup->begin();
-    Fl_Input* insertTitle = new Fl_Input(130, 20, 500, 40, "Title: " );
+    Fl_Input* insertTitle = new Fl_Input(130, 20, 300, 40, "Title: " );
     Fl_Multiline_Input* insertDescription = new Fl_Multiline_Input(130, 80, 500, 140, "Description: ");
+    insertDescription->wrap(true);
     Fl_Spinner* insertHour = new Fl_Spinner(190, 270, 70, 50);
     insertHour->type(FL_INT_INPUT);
     insertHour->range(0, 23);
@@ -87,11 +96,21 @@ int main() {
     insertSeconds->step(1);
     Fl_Button* createB = new Fl_Button(430, 420, 100, 50, "Create");
     Fl_Button* cancelB = new Fl_Button(550, 420, 100, 50, "Cancel");
+    Fl_Choice* inputLabel = new Fl_Choice(510, 20, 150, 40, "Label: " );
+    inputLabel->add(labelToString(Label::Generic).c_str());
+    inputLabel->add(labelToString(Label::Fun).c_str());
+    inputLabel->add(labelToString(Label::Light_Activity).c_str());
+    inputLabel->add(labelToString(Label::Sport).c_str());
+    inputLabel->add(labelToString(Label::Wellness).c_str());
+    inputLabel->add(labelToString(Label::Work).c_str());
+    inputLabel->add(labelToString(Label::Other).c_str());
+    ct->ps = new parameters{insertTitle, insertDescription, insertHour, insertMinutes, insertSeconds, inputLabel};
     popup->end();
     popup->hide();
 
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
+    labelFilter->callback(visualizeByLabel_cb, ct);
 
     window.end();
     window.show();
