@@ -102,8 +102,10 @@ int main() {
     insertSeconds->range(0, 59);
     insertSeconds->value(0);
     insertSeconds->step(1);
-    Fl_Button* createB = new Fl_Button(430, 420, 100, 50, "Create");
-    Fl_Button* cancelB = new Fl_Button(550, 420, 100, 50, "Cancel");
+    Fl_Button* createB = new Fl_Button(430, 420, 100, 50, "Create");        //child 5
+    createB->callback(createNew_cb, ct);
+    Fl_Button* cancelB = new Fl_Button(550, 420, 100, 50, "Cancel");        //child 6
+    cancelB->callback(cancelNew_cb, ct);
     Fl_Choice* inputLabel = new Fl_Choice(510, 20, 150, 40, "Label: " );
     inputLabel->add(labelToString(Label::Generic).c_str());
     inputLabel->add(labelToString(Label::Fun).c_str());
@@ -112,12 +114,19 @@ int main() {
     inputLabel->add(labelToString(Label::Wellness).c_str());
     inputLabel->add(labelToString(Label::Work).c_str());
     inputLabel->add(labelToString(Label::Other).c_str());
+    Fl_Button* saveMod = new Fl_Button(430, 420, 100, 50, "Save");          //child 8
+    saveMod->callback(save_cb, ct);
+    saveMod->hide();
+    Fl_Button* cancelMod = new Fl_Button(550, 420, 100, 50, "Cancel");      //child 9
+    cancelMod->callback(modify_canc_cb, ct);
+    cancelMod->hide();
     ct->ps = new parameters{insertTitle, insertDescription, insertHour, insertMinutes, insertSeconds, inputLabel};
     popup->end();
     popup->hide();
 
     populateBrowser(ct);
 
+    browser->callback(lineSelect_cb, ct);
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
     labelFilter->callback(visualizeByLabel_cb, ct);

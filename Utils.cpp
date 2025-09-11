@@ -13,19 +13,57 @@ bool operator< (const Date &a, const Date &b) {
 string labelToColor(Label label) {
     switch (label) {
         case Label::Generic:
-            return "@C25●";
+            return "@C25● ";
         case Label::Fun:
-            return "@C26●";
+            return "@C26● ";
         case Label::Sport:
-            return "@C27●";
+            return "@C27● ";
         case Label::Light_Activity:
-            return "@C28●";
+            return "@C28● ";
         case Label::Wellness:
-            return "@C29●";
+            return "@C29● ";
         case Label::Work:
-            return "@C30●";
+            return "@C30● ";
         case Label::Other:
-            return "@C31●";
+            return "@C31● ";
+    }
+}
+
+int labelToIndex(Label label) {
+    switch (label) {
+        case Label::Generic:
+            return 0;
+        case Label::Fun:
+            return 1;
+        case Label::Sport:
+            return 2;
+        case Label::Light_Activity:
+            return 3;
+        case Label::Wellness:
+            return 4;
+        case Label::Work:
+            return 5;
+        case Label::Other:
+            return 6;
+    }
+}
+
+Label indexToLabel(int i) {
+    switch (i) {
+        case 1:
+            return Label::Fun;
+        case 2:
+            return Label::Light_Activity;
+        case 3:
+            return Label::Sport;
+        case 4:
+            return Label::Wellness;
+        case 5:
+            return Label::Work;
+        case 6:
+            return Label::Other;
+        default:
+            return Label::Generic;
     }
 }
 
@@ -79,6 +117,32 @@ string getPreview (const Activity& a, int maxLen) {
     return descr;
 }
 
+void lineSelect_cb(Fl_Widget* w, void* data) {
+    Fl_Multi_Browser* browser = static_cast<Fl_Multi_Browser *>(w);
+    context* ct = static_cast<context *>(data);
+
+    if (Fl::event_clicks()) {
+        int line = browser->value();
+        int index = (line - 1) / 2;                 //calculate the activity index into the register vector based on the line clicked
+        if (ct->r->getVector().empty())
+            return;
+        ct->ps->act_index = index;
+        Activity act = ct->r->getVector()[index];
+        ct->ps->ititle->value(act.getTitle().c_str());
+        ct->ps->idescr->value(act.getDescription().c_str());
+        ct->ps->dh->value(act.getHours());
+        ct->ps->dm->value(act.getMinutes());
+        ct->ps->ds->value(act.getSeconds());
+        ct->ps->label->value(labelToIndex(act.getLabel()));
+
+        ct->newAct->child(5)->hide();
+        ct->newAct->child(6)->hide();
+        ct->newAct->child(8)->show();
+        ct->newAct->child(9)->show();
+        ct->newAct->show();
+    }
+}
+
 void newAct_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context*>(data);
 
@@ -89,40 +153,15 @@ void newAct_cb(Fl_Widget *w, void *data) {
     ct->ps->ds->value(0);
     ct->ps->label->value(0);
     ct->newAct->show();
-
-    Fl_Button* createB = static_cast<Fl_Button *>(ct->newAct->child(5));
-    createB->callback(createNew_cb, ct);
-    Fl_Button* cancelB = static_cast<Fl_Button *>(ct->newAct->child(6));
-    cancelB->callback(cancelNew_cb, ct);
-
 }
 
 void createNew_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context *>(data);
 
     string texts[2] = {ct->ps->ititle->value(), ct->ps->idescr->value()};
-    Label actLabel = Label::Generic;
 
     int ind = ct->ps->label->value();
-    switch (ind) {
-        case 1:
-            actLabel = Label::Fun;
-            break;
-        case 2:
-            actLabel = Label::Light_Activity;
-            break;
-        case 3:
-            actLabel = Label::Sport;
-            break;
-        case 4:
-            actLabel = Label::Wellness;
-            break;
-        case 5:
-            actLabel = Label::Work;
-            break;
-        case 6:
-            actLabel = Label::Other;
-    }
+    Label actLabel = indexToLabel(ind);
 
     Activity newActivity(texts[0],texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value(), actLabel);
     ct->r->addActivity(newActivity);
@@ -197,6 +236,40 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
         delete last;
 
         ct->win->redraw();
+    }
+}
+
+void save_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+
+    int n = ct->r->getVector().size();
+    int index = ct->ps->act_index;
+    ct->r->removeActivity(index);
+    auto it = ct->deleteButtons.end();
+    --it;
+    Fl_Button* last = static_cast<Fl_Button*>(ct->deleteg->child(n-1));
+    ct->deleteg->remove(last);
+    ct->deleteButtons.erase(it);
+    delete last;
+
+    createNew_cb(w, ct);
+
+    ct->newAct->child(8)->hide();
+    ct->newAct->child(9)->hide();
+    ct->newAct->child(5)->show();
+    ct->newAct->child(6)->show();
+}
+
+void modify_canc_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+
+    int choice = fl_choice("Delete all changes? All the changes will be lost", "Cancel", "Delete", 0);
+    if (choice == 1) {
+        ct->newAct->child(8)->hide();
+        ct->newAct->child(9)->hide();
+        ct->newAct->child(5)->show();
+        ct->newAct->child(6)->show();
+        ct->newAct->hide();
     }
 }
 

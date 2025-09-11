@@ -30,6 +30,7 @@ struct parameters {
     Fl_Spinner* dm;
     Fl_Spinner* ds;
     Fl_Choice* label;
+    int act_index;
 };
 
 struct context {
@@ -45,15 +46,20 @@ struct context {
 
 bool operator< (const Date& a, const Date& b);
 string labelToColor(Label label);
+int labelToIndex (Label label);
+Label indexToLabel(int i);
 
 void populateBrowser(context* ct);
 string getPreview (const Activity& a, int maxLen = 30);
 
+void lineSelect_cb(Fl_Widget* w, void* data);
 void newAct_cb(Fl_Widget* w, void* data);
 void createNew_cb(Fl_Widget* w, void* data);
 void cancelNew_cb(Fl_Widget* w, void* data);
 void removeButton_cb(Fl_Widget* w, void* data);
 void deleteButton_cb(Fl_Widget* w, void* data);
+void save_cb(Fl_Widget* w, void* data);
+void modify_canc_cb(Fl_Widget* w, void* data);
 void visualizeByLabel_cb(Fl_Widget* w, void* data);
 
 
