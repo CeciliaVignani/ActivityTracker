@@ -13,24 +13,32 @@ int main() {
     int year = local->tm_year + 1900;
     Date today {day, month, year};
 
-    Activity act1;
-    Activity act2("Title", "Long description to let it cut for the previwe", 0, 2, 30);
+    Fl::set_color(25, 0,204,0);             //green
+    Fl::set_color(26, 255,255,0);           //yellow
+    Fl::set_color(27, 204,0,0);             //red
+    Fl::set_color(28, 255,128,0);           //orange
+    Fl::set_color(29, 0,204,204);           //light blue
+    Fl::set_color(30, 76, 0, 153);          //dark violet
+    Fl::set_color(31, 0,204,102);           //dark aqua
+
+    //Activity act1;
+    //Activity act2("Title", "Long description to let it cut for the preview", 0, 2, 30);
 
     context* ct = new context;
 
     Register reg(day, month, year);
     ct->r = &reg;
-    reg.addActivity(act1);
-    reg.addActivity(act2);
+    //reg.addActivity(act1);
+    //reg.addActivity(act2);
     Fl_Window window (1000, 750, "ACTIVITY TRACKER");
     ct->win = &window;
     string dateLabel = dateToString(today);
     Fl_Box* dateBox = new Fl_Box(5, 5, 990, 30, dateLabel.c_str());
     dateBox->labelfont(FL_BOLD);
-    Fl_Browser* browser = new Fl_Browser(5, 35, 990, 660);
+    Fl_Multi_Browser* browser = new Fl_Multi_Browser(5, 35, 990, 660);
     ct->b = browser;
     window.resizable(browser);
-    populateBrowser(reg,*browser);
+    populateBrowser(ct);
 
     Fl_Button* prevDay = new Fl_Button(5,5, 60, 30, "<<");
     ct->allButtons.push_back(prevDay);
@@ -108,10 +116,12 @@ int main() {
     popup->end();
     popup->hide();
 
+    populateBrowser(ct);
+
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
     labelFilter->callback(visualizeByLabel_cb, ct);
-
+    //TODO implementare visualizzazione per etichetta
     window.end();
     window.show();
     return Fl::run();

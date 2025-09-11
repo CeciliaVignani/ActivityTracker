@@ -9,10 +9,12 @@
 
 using namespace std;
 
-struct Time {
-    int hours;
-    int minutes;
-    int seconds;
+namespace Act{
+    struct Time {
+        int hours;
+        int minutes;
+        int seconds;
+    };
 };
 
 enum class Label {
@@ -26,7 +28,7 @@ enum class Label {
 };
 
 string labelToString(const Label &l);
-string timeToString(const Time &t);
+string timeToString(const Act::Time &t);
 
 class Activity {
 public:
@@ -43,8 +45,8 @@ public:
     bool setSeconds (int s);
     string getTitle () const;
     string getDescription () const;
-    string getLabel () const;
-    Time getTime() const;
+    Label getLabel () const;
+    Act::Time getTime() const;
     int getHours () const;
     int getMinutes () const;
     int getSeconds () const;
@@ -52,7 +54,7 @@ public:
 private:
     string title;
     string description;
-    Time actTime;
+    Act::Time actTime;
     Label label;
 };
 

@@ -9,7 +9,8 @@
 #include <string>
 #include "Activity.h"
 #include "Register.h"
-#include <FL/Fl_Browser.H>
+#include <FL/Fl.H>
+#include <FL/Fl_Multi_Browser.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
@@ -34,7 +35,7 @@ struct parameters {
 struct context {
     Register *r;
     Fl_Window* win;
-    Fl_Browser* b;
+    Fl_Multi_Browser* b;
     Fl_Group* deleteg;
     vector<Fl_Widget*> allButtons;
     map<Fl_Button*, int> deleteButtons;
@@ -43,8 +44,9 @@ struct context {
 };
 
 bool operator< (const Date& a, const Date& b);
+string labelToColor(Label label);
 
-void populateBrowser(const Register& r, Fl_Browser& b);
+void populateBrowser(context* ct);
 string getPreview (const Activity& a, int maxLen = 30);
 
 void newAct_cb(Fl_Widget* w, void* data);

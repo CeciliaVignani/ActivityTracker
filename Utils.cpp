@@ -10,20 +10,73 @@ bool operator< (const Date &a, const Date &b) {
     return a.day < b.day;
 }
 
-void populateBrowser(const Register& r, Fl_Browser& b) {
-    b.clear();
-    if (r.getVector().empty())
-        b.add("Registro vuoto. Inserisci la tua prima attività!");
-    else
-        for (const Activity& act : r.getVector())
-            b.add(getPreview(act).c_str());
+string labelToColor(Label label) {
+    switch (label) {
+        case Label::Generic:
+            return "@C25●";
+        case Label::Fun:
+            return "@C26●";
+        case Label::Sport:
+            return "@C27●";
+        case Label::Light_Activity:
+            return "@C28●";
+        case Label::Wellness:
+            return "@C29●";
+        case Label::Work:
+            return "@C30●";
+        case Label::Other:
+            return "@C31●";
+    }
+}
+
+void populateBrowser(context* ct) {
+    ct->b->clear();
+
+    if (ct->r->getVector().empty()) {
+
+        int browser_h = ct->b->h();
+        int line_h = ct->b->textsize();
+        int total_lines = browser_h / line_h;
+        int padding = total_lines / 3;
+        int browser_w = ct->b->w();
+        int char_w = ct->b->textsize();
+        int spaces = browser_w / char_w;
+        string sp = "";
+        for (int i = 0; i < spaces; i++)
+            sp += " ";
+
+        for (int i = 0; i < padding; i++) {
+            ct->b->add("");
+        }
+
+        ct->b->textfont(FL_TIMES_BOLD);
+        ct->b->textcolor(FL_LIGHT1);
+        ct->b->textsize(20);
+        string msg = sp + "        The register is empty";
+        ct->b->add(msg.c_str());
+        msg = sp + "Add your first activity to get started!";
+        ct->b->add(msg.c_str());
+    }
+    else {
+        ct->b->textfont(FL_TIMES);
+        ct->b->textcolor(FL_BLACK);
+        ct->b->textsize(21);
+
+        for (const Activity& act : ct->r->getVector()) {
+            string title = "@b" + labelToColor(act.getLabel()) + act.getTitle();
+            string descr = "   " + getPreview(act) + " ---    Duration: " + timeToString(act.getTime());
+
+            ct->b->add(title.c_str());
+            ct->b->add(descr.c_str());
+        }
+    }
 }
 
 string getPreview (const Activity& a, int maxLen) {
     string descr = a.getDescription();
     if (descr.length() > maxLen)
         descr = descr.substr(0, maxLen) + "...";
-    return a.getTitle() + " - " + descr;
+    return descr;
 }
 
 void newAct_cb(Fl_Widget *w, void *data) {
@@ -54,6 +107,7 @@ void createNew_cb(Fl_Widget *w, void *data) {
     switch (ind) {
         case 1:
             actLabel = Label::Fun;
+            break;
         case 2:
             actLabel = Label::Light_Activity;
             break;
@@ -73,7 +127,7 @@ void createNew_cb(Fl_Widget *w, void *data) {
     Activity newActivity(texts[0],texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value(), actLabel);
     ct->r->addActivity(newActivity);
 
-    populateBrowser(*ct->r, *ct->b);
+    populateBrowser(ct);
     int n = ct->r->getVector().size();
     Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
     ct->deleteg->add(deleteB);
@@ -90,7 +144,7 @@ void cancelNew_cb(Fl_Widget *w, void *data) {
     if (choice == 1) {
         Activity newActivity;
         ct->r->addActivity(newActivity);
-        populateBrowser(*ct->r, *ct->b);
+        populateBrowser(ct);
         int n = ct->r->getVector().size();
         Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
         ct->deleteg->add(deleteB);
@@ -134,7 +188,7 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
     int choice = fl_choice(question.c_str(), "Cancel", "Confirm", 0);
     if (choice == 1) {
         ct->r->removeActivity(index);
-        populateBrowser(*ct->r, *ct->b);
+        populateBrowser(ct);
         auto it = ct->deleteButtons.end();
         --it;
         Fl_Button* last = static_cast<Fl_Button*>(ct->deleteg->child(n-1));

@@ -17,7 +17,7 @@ string labelToString(const Label &l) {
     return "Generic";
 }
 
-string timeToString(const Time &t) {
+string timeToString(const Act::Time &t) {
     string stringTime;
     if (t.hours < 10)
         stringTime = "0" + to_string(t.hours);
@@ -107,19 +107,19 @@ bool Activity::setSeconds(int s) {
 }
 
 string Activity::getTitle() const {
-    return title;
+    return  title;
 }
 
 string Activity::getDescription() const {
     return description;
 }
 
-string Activity::getLabel() const {
-    return labelToString(label);
+Label Activity::getLabel() const {
+    return label;
 }
 
 
-Time Activity::getTime() const {
+Act::Time Activity::getTime() const {
     return actTime;
 }
 
