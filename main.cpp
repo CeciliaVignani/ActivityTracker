@@ -39,7 +39,6 @@ int main() {
     ct->b = browser;
     window.resizable(browser);
     populateBrowser(ct);
-
     Fl_Button* prevDay = new Fl_Button(5,5, 60, 30, "<<");
     ct->allButtons.push_back(prevDay);
     Fl_Button* nextDay = new Fl_Button(935, 5, 60, 30, ">>");
@@ -62,7 +61,7 @@ int main() {
     labelFilter->add(labelToString(Label::Work).c_str());
     labelFilter->add(labelToString(Label::Other).c_str());
     ct->allButtons.push_back(labelFilter);
-    Fl_Button* orderBy = new Fl_Button (748, 695, 247, 50, "Order by:");
+    Fl_Button* orderBy = new Fl_Button (748, 695, 247, 50, "Order by: longest duration first");
     ct->allButtons.push_back(orderBy);
     newAct->align(FL_ALIGN_CENTER);
     removeAct->align(FL_ALIGN_CENTER);
@@ -130,6 +129,7 @@ int main() {
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
     labelFilter->callback(visualizeByLabel_cb, ct);
+    orderBy->callback(changeOrder_cb,ct);
     //TODO implementare visualizzazione per etichetta
     window.end();
     window.show();

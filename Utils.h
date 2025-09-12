@@ -42,6 +42,8 @@ struct context {
     map<Fl_Button*, int> deleteButtons;
     Fl_Window* newAct;
     parameters* ps;
+    bool originalFlag = true;
+    vector<Activity> activities;
 };
 
 bool operator< (const Date& a, const Date& b);
@@ -50,16 +52,20 @@ int labelToIndex (Label label);
 Label indexToLabel(int i);
 
 void populateBrowser(context* ct);
+void revPopulateBrowser(context* ct);
 string getPreview (const Activity& a, int maxLen = 30);
 
 void lineSelect_cb(Fl_Widget* w, void* data);
 void newAct_cb(Fl_Widget* w, void* data);
 void createNew_cb(Fl_Widget* w, void* data);
 void cancelNew_cb(Fl_Widget* w, void* data);
+void addActivityInVector(context* ct, Activity act);
 void removeButton_cb(Fl_Widget* w, void* data);
 void deleteButton_cb(Fl_Widget* w, void* data);
+void removeActivityInVector(context* ct, Activity act);
 void save_cb(Fl_Widget* w, void* data);
 void modify_canc_cb(Fl_Widget* w, void* data);
+void changeOrder_cb(Fl_Widget* w, void* data);
 void visualizeByLabel_cb(Fl_Widget* w, void* data);
 
 

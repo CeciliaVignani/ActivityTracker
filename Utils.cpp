@@ -26,13 +26,13 @@ string labelToColor(Label label) {
             return "@C30● ";
         case Label::Other:
             return "@C31● ";
+        default:
+            return "@C25● ";
     }
 }
 
 int labelToIndex(Label label) {
     switch (label) {
-        case Label::Generic:
-            return 0;
         case Label::Fun:
             return 1;
         case Label::Sport:
@@ -45,6 +45,8 @@ int labelToIndex(Label label) {
             return 5;
         case Label::Other:
             return 6;
+        default:
+            return 0;
     }
 }
 
@@ -83,9 +85,8 @@ void populateBrowser(context* ct) {
         for (int i = 0; i < spaces; i++)
             sp += " ";
 
-        for (int i = 0; i < padding; i++) {
+        for (int i = 0; i < padding; i++)
             ct->b->add("");
-        }
 
         ct->b->textfont(FL_TIMES_BOLD);
         ct->b->textcolor(FL_LIGHT1);
@@ -94,13 +95,53 @@ void populateBrowser(context* ct) {
         ct->b->add(msg.c_str());
         msg = sp + "Add your first activity to get started!";
         ct->b->add(msg.c_str());
-    }
-    else {
+    } else {
         ct->b->textfont(FL_TIMES);
         ct->b->textcolor(FL_BLACK);
         ct->b->textsize(21);
 
         for (const Activity& act : ct->r->getVector()) {
+            string title = "@b" + labelToColor(act.getLabel()) + act.getTitle();
+            string descr = "   " + getPreview(act) + " ---    Duration: " + timeToString(act.getTime());
+
+            ct->b->add(title.c_str());
+            ct->b->add(descr.c_str());
+        }
+    }
+}
+
+void revPopulateBrowser(context *ct) {
+    ct->b->clear();
+
+    if (ct->activities.empty()) {
+
+        int browser_h = ct->b->h();
+        int line_h = ct->b->textsize();
+        int total_lines = browser_h / line_h;
+        int padding = total_lines / 3;
+        int browser_w = ct->b->w();
+        int char_w = ct->b->textsize();
+        int spaces = browser_w / char_w;
+        string sp = "";
+        for (int i = 0; i < spaces; i++)
+            sp += " ";
+
+        for (int i = 0; i < padding; i++)
+            ct->b->add("");
+
+        ct->b->textfont(FL_TIMES_BOLD);
+        ct->b->textcolor(FL_LIGHT1);
+        ct->b->textsize(20);
+        string msg = sp + "        The register is empty";
+        ct->b->add(msg.c_str());
+        msg = sp + "Add your first activity to get started!";
+        ct->b->add(msg.c_str());
+    } else {
+        ct->b->textfont(FL_TIMES);
+        ct->b->textcolor(FL_BLACK);
+        ct->b->textsize(21);
+
+        for (const Activity& act : ct->activities) {
             string title = "@b" + labelToColor(act.getLabel()) + act.getTitle();
             string descr = "   " + getPreview(act) + " ---    Duration: " + timeToString(act.getTime());
 
@@ -127,7 +168,13 @@ void lineSelect_cb(Fl_Widget* w, void* data) {
         if (ct->r->getVector().empty())
             return;
         ct->ps->act_index = index;
-        Activity act = ct->r->getVector()[index];
+        Activity act;
+
+        if (ct->originalFlag)
+            act = ct->r->getVector()[index];
+        else
+            act = ct->activities[index];
+
         ct->ps->ititle->value(act.getTitle().c_str());
         ct->ps->idescr->value(act.getDescription().c_str());
         ct->ps->dh->value(act.getHours());
@@ -165,8 +212,10 @@ void createNew_cb(Fl_Widget *w, void *data) {
 
     Activity newActivity(texts[0],texts[1], ct->ps->dh->value(), ct->ps->dm->value(), ct->ps->ds->value(), actLabel);
     ct->r->addActivity(newActivity);
+    addActivityInVector(ct, newActivity);
 
-    populateBrowser(ct);
+    if (ct->originalFlag) populateBrowser(ct);
+    else revPopulateBrowser(ct);
     int n = ct->r->getVector().size();
     Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
     ct->deleteg->add(deleteB);
@@ -183,7 +232,9 @@ void cancelNew_cb(Fl_Widget *w, void *data) {
     if (choice == 1) {
         Activity newActivity;
         ct->r->addActivity(newActivity);
-        populateBrowser(ct);
+        addActivityInVector(ct, newActivity);
+        if (ct->originalFlag) populateBrowser(ct);
+        else revPopulateBrowser(ct);
         int n = ct->r->getVector().size();
         Fl_Button* deleteB = new Fl_Button(945, 35 + (50*(n-1)), 50, 50, "X");
         ct->deleteg->add(deleteB);
@@ -193,7 +244,24 @@ void cancelNew_cb(Fl_Widget *w, void *data) {
     ct->newAct->hide();
 }
 
-
+void addActivityInVector(context *ct, Activity act) {
+    auto it = ct->activities.begin();
+    bool found = false;
+    while (it != ct->activities.end()) {
+        if (it->getHours() < act.getHours()) {
+            ct->activities.insert(it, act);
+            return;
+        }else if (it->getHours() == act.getHours() && it->getMinutes() < act.getMinutes()) {
+            ct->activities.insert(it, act);
+            return;
+        }else if (it->getHours() == act.getHours() && it->getMinutes() == act.getMinutes() && it->getSeconds() < act.getSeconds()) {
+            ct->activities.insert(it, act);
+            return;
+        }
+        ++it;
+    }
+    ct->activities.insert(it, act);
+}
 
 void removeButton_cb(Fl_Widget *w, void *data){
     context* ct = static_cast<context*>(data);
@@ -221,13 +289,28 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
 
     int n = ct->r->getVector().size();
     int index = ct->deleteButtons[btn];
-    auto act = ct->r->getVector()[index];
+    Activity act;
+    if (ct->originalFlag) act = ct->r->getVector()[index];
+    else act = ct->activities[index];
     string question = "Do you really want to remove the activity with title '" + act.getTitle() + "' ?";
 
     int choice = fl_choice(question.c_str(), "Cancel", "Confirm", 0);
     if (choice == 1) {
-        ct->r->removeActivity(index);
-        populateBrowser(ct);
+        if (ct->originalFlag) {
+            ct->r->removeActivity(index);
+            removeActivityInVector(ct, act);
+            populateBrowser(ct);
+        } else {
+            int pos;
+            for (int i = 0; i < n; i++) {
+                if (strcmp(ct->r->getVector()[i].getTitle().c_str(), act.getTitle().c_str()) == 0 && strcmp(ct->r->getVector()[i].getDescription().c_str(), act.getDescription().c_str()) == 0)
+                    pos = i;
+            }
+            ct->r->removeActivity(pos);
+            removeActivityInVector(ct, act);
+            revPopulateBrowser(ct);
+        }
+
         auto it = ct->deleteButtons.end();
         --it;
         Fl_Button* last = static_cast<Fl_Button*>(ct->deleteg->child(n-1));
@@ -239,12 +322,38 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
     }
 }
 
+void removeActivityInVector(context *ct, Activity act) {
+    auto it = ct->activities.begin();
+    bool found = false;
+    for (auto it = ct->activities.begin(); it != ct->activities.end(); ++it) {
+        if (it->getTitle() == act.getTitle() && it->getDescription() == act.getDescription()) {
+            ct->activities.erase(it);
+            break;
+        }
+    }
+}
+
 void save_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context *>(data);
 
     int n = ct->r->getVector().size();
     int index = ct->ps->act_index;
-    ct->r->removeActivity(index);
+    //TODO errore importante nella rimozione dell'attività in vettore e registro. Gestire rimozione in base a flag di modo
+    if (ct->originalFlag) {
+        Activity act = ct->r->getVector()[index];
+        ct->r->removeActivity(index);
+        removeActivityInVector(ct, act);
+    } else {
+        int pos;
+        for (int i = 0; i < n; i++) {
+            if (strcmp(ct->r->getVector()[i].getTitle().c_str(), ct->activities[index].getTitle().c_str()) == 0 && strcmp(ct->r->getVector()[i].getDescription().c_str(), ct->activities[index].getDescription().c_str()) == 0)
+                pos = i;
+        }
+        Activity act = ct->r->getVector()[pos];
+        ct->r->removeActivity(pos);
+        removeActivityInVector(ct, act);
+    }
+
     auto it = ct->deleteButtons.end();
     --it;
     Fl_Button* last = static_cast<Fl_Button*>(ct->deleteg->child(n-1));
@@ -271,6 +380,27 @@ void modify_canc_cb(Fl_Widget *w, void *data) {
         ct->newAct->child(6)->show();
         ct->newAct->hide();
     }
+}
+
+void changeOrder_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context*>(data);
+    Fl_Button* orderButton = static_cast<Fl_Button *>(w);
+
+    if (ct->originalFlag) {
+        ct->activities.clear();
+        for (auto i = ct->r->getVector().rbegin(); i != ct->r->getVector().rend(); ++i)
+            ct->activities.push_back(*i);
+
+        revPopulateBrowser(ct);
+        orderButton->label("Order by: shortest duration first");
+        ct->originalFlag = false;
+    } else {
+        ct->activities.clear();
+        populateBrowser(ct);
+        orderButton->label("Order by: longest duration first");
+        ct->originalFlag = true;
+    }
+    ct->b->redraw();
 }
 
 void visualizeByLabel_cb(Fl_Widget *w, void *data) {
