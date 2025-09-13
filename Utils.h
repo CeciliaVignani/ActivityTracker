@@ -36,6 +36,7 @@ struct parameters {
 struct context {
     Register *r;
     Fl_Window* win;
+    Fl_Box* dateBox;
     Fl_Multi_Browser* b;
     Fl_Group* deleteg;
     vector<Fl_Widget*> allButtons;
@@ -44,9 +45,13 @@ struct context {
     parameters* ps;
     bool originalFlag = true;
     vector<Activity> activities;
+    vector<Register> registers;
 };
 
 bool operator< (const Date& a, const Date& b);
+bool operator ==(const Date& a, const Date &b);
+Date incrementDate(Date date);
+Date decrementDate(Date date);
 string labelToColor(Label label);
 int labelToIndex (Label label);
 Label indexToLabel(int i);
@@ -54,7 +59,10 @@ Label indexToLabel(int i);
 void populateBrowser(context* ct);
 void revPopulateBrowser(context* ct);
 string getPreview (const Activity& a, int maxLen = 30);
+Register& getOrCreateRegister(context* ct, Date date);
 
+void prevDay_cb(Fl_Widget* w, void* data);
+void nextDay_cb(Fl_Widget* w, void* data);
 void lineSelect_cb(Fl_Widget* w, void* data);
 void newAct_cb(Fl_Widget* w, void* data);
 void createNew_cb(Fl_Widget* w, void* data);

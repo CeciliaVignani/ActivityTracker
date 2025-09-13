@@ -28,12 +28,14 @@ int main() {
 
     Register reg(day, month, year);
     ct->r = &reg;
+    ct->registers.push_back(reg);
     //reg.addActivity(act1);
     //reg.addActivity(act2);
     Fl_Window window (1000, 750, "ACTIVITY TRACKER");
     ct->win = &window;
     string dateLabel = dateToString(today);
     Fl_Box* dateBox = new Fl_Box(5, 5, 990, 30, dateLabel.c_str());
+    ct->dateBox = dateBox;
     dateBox->labelfont(FL_BOLD);
     Fl_Multi_Browser* browser = new Fl_Multi_Browser(5, 35, 990, 660);
     ct->b = browser;
@@ -125,11 +127,14 @@ int main() {
 
     populateBrowser(ct);
 
-    browser->callback(lineSelect_cb, ct);
+    prevDay->callback(prevDay_cb, ct);
+    nextDay->callback(nextDay_cb, ct);
+
+    browser->callback(lineSelect_cb, ct);                   //callback complete
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
     labelFilter->callback(visualizeByLabel_cb, ct);
-    orderBy->callback(changeOrder_cb,ct);
+    orderBy->callback(changeOrder_cb,ct);                   //callback complete
     //TODO implementare visualizzazione per etichetta
     window.end();
     window.show();

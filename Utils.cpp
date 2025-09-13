@@ -10,6 +10,67 @@ bool operator< (const Date &a, const Date &b) {
     return a.day < b.day;
 }
 
+bool operator==(const Date &a, const Date &b) {
+    if (a.day == b.day && a.month == b.month && a.year == b.year)
+        return true;
+    return false;
+}
+
+Date incrementDate(Date date) {
+    //casi: se il mese è 4, 6, 9, 11 e il giorno è 30, aggiorno mese successivo e giorno 1
+    //      se il mese è 2 e giorno è 28, se anno % 4 == 0 aggiorna a 29, altrimenri aggiorno mese successivo e giorno 1
+    //      se non è nessuno di questi e giorno è 31, aggiorna a mese successivo e giorno 1
+    //      se il giorno è 31 e il mese è 12, aggiorna a 1/1 e anno +1
+    //      altrimenti giorno +1
+    Date newDate;
+
+    if (date.day == 31) {
+        if (date.month == 12)
+            newDate = {1, 1, date.year + 1};
+        else
+            newDate = {1, date.month + 1, date.year};
+    } else if (date.day == 30 && (date.month == 4 || date.month == 6 || date.month == 9 || date.month == 11))
+        newDate = {1, date.month + 1, date.year};
+    else if (date.day == 29 && date.month == 2)
+        newDate = {1, 3, date.year};
+    else if (date.day == 28 && date.month == 2) {
+        if (date.year % 4 == 0)
+            newDate = {29, 2, date.year};
+        else
+            newDate = {1, 3, date.year};
+    }else
+        newDate = {date.day + 1, date.month, date.year};
+
+    return newDate;
+}
+
+Date decrementDate(Date date) {
+    //casi: se giorno è 1, aggiorno mese precedente e giorno in base a nuovo mese
+    //      se giorno è 1 e mese è 1, aggiorna a 31/12 e anno -1
+    //      altrimenti giorno -1
+    Date newDate;
+
+    if (date.day == 1) {
+        if (date.month == 1) {
+            if (date.year == 2000)
+                newDate = date;
+            else
+                newDate = {31, 12, date.year - 1};
+        }else if (date.month == 5 || date.month == 7 || date.month == 10 || date.month == 12)
+            newDate = {30, date.month - 1, date.year};
+        else if (date.month == 3) {
+            if (date.year % 4 == 0)
+                newDate = {29, 2, date.year};
+            else
+                newDate = {28, 2, date.year};
+        }else
+            newDate = {31, date.month - 1, date.year};
+    } else
+        newDate = {date.day - 1, date.month, date.year};
+
+    return newDate;
+}
+
 string labelToColor(Label label) {
     switch (label) {
         case Label::Generic:
@@ -156,6 +217,37 @@ string getPreview (const Activity& a, int maxLen) {
     if (descr.length() > maxLen)
         descr = descr.substr(0, maxLen) + "...";
     return descr;
+}
+
+Register& getOrCreateRegister(context* ct, Date date) {
+    bool found = false;
+
+    for (auto& reg : ct->registers) {
+        if (reg.getDate() == date)
+            return reg;
+    }
+
+    Register newReg (date.day, date.month, date.year);
+    ct->registers.push_back(newReg);
+    return ct->registers.back();
+}
+
+void prevDay_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+    Date newDate = decrementDate(ct->r->getDate());
+    ct->dateBox->label(dateToString(newDate).c_str());
+
+    ct->r = &getOrCreateRegister(ct, newDate);
+    populateBrowser(ct);
+}
+
+void nextDay_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+    Date newDate = incrementDate(ct->r->getDate());
+    ct->dateBox->label(dateToString(newDate).c_str());
+
+    ct->r = &getOrCreateRegister(ct, newDate);
+    populateBrowser(ct);
 }
 
 void lineSelect_cb(Fl_Widget* w, void* data) {
@@ -388,6 +480,8 @@ void changeOrder_cb(Fl_Widget *w, void *data) {
 
     if (ct->originalFlag) {
         ct->activities.clear();
+        ct->allButtons[0]->deactivate();
+        ct->allButtons[1]->deactivate();
         for (auto i = ct->r->getVector().rbegin(); i != ct->r->getVector().rend(); ++i)
             ct->activities.push_back(*i);
 
@@ -396,6 +490,8 @@ void changeOrder_cb(Fl_Widget *w, void *data) {
         ct->originalFlag = false;
     } else {
         ct->activities.clear();
+        ct->allButtons[0]->activate();
+        ct->allButtons[1]->activate();
         populateBrowser(ct);
         orderButton->label("Order by: longest duration first");
         ct->originalFlag = true;
@@ -406,5 +502,7 @@ void changeOrder_cb(Fl_Widget *w, void *data) {
 void visualizeByLabel_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context*>(data);
 
+    //usare una window con browser per la visualizzazione e basta
+    //per la modifica, rimandare al browser principale
 
 }
