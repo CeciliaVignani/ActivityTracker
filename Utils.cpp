@@ -267,6 +267,13 @@ void lineSelect_cb(Fl_Widget* w, void* data) {
         else
             act = ct->activities[index];
 
+        ct->ps->ititle->activate();
+        ct->ps->idescr->activate();
+        ct->ps->dh->activate();
+        ct->ps->dm->activate();
+        ct->ps->ds->activate();
+        ct->ps->label->activate();
+
         ct->ps->ititle->value(act.getTitle().c_str());
         ct->ps->idescr->value(act.getDescription().c_str());
         ct->ps->dh->value(act.getHours());
@@ -284,6 +291,13 @@ void lineSelect_cb(Fl_Widget* w, void* data) {
 
 void newAct_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context*>(data);
+
+    ct->ps->ititle->activate();
+    ct->ps->idescr->activate();
+    ct->ps->dh->activate();
+    ct->ps->dm->activate();
+    ct->ps->ds->activate();
+    ct->ps->label->activate();
 
     ct->ps->ititle->value("");
     ct->ps->idescr->value("");
@@ -415,8 +429,6 @@ void deleteButton_cb(Fl_Widget *w, void *data) {
 }
 
 void removeActivityInVector(context *ct, Activity act) {
-    auto it = ct->activities.begin();
-    bool found = false;
     for (auto it = ct->activities.begin(); it != ct->activities.end(); ++it) {
         if (it->getTitle() == act.getTitle() && it->getDescription() == act.getDescription()) {
             ct->activities.erase(it);
@@ -430,7 +442,7 @@ void save_cb(Fl_Widget *w, void *data) {
 
     int n = ct->r->getVector().size();
     int index = ct->ps->act_index;
-    //TODO errore importante nella rimozione dell'attività in vettore e registro. Gestire rimozione in base a flag di modo
+
     if (ct->originalFlag) {
         Activity act = ct->r->getVector()[index];
         ct->r->removeActivity(index);
@@ -501,8 +513,70 @@ void changeOrder_cb(Fl_Widget *w, void *data) {
 
 void visualizeByLabel_cb(Fl_Widget *w, void *data) {
     context* ct = static_cast<context*>(data);
+    Fl_Menu_Button* menu = static_cast<Fl_Menu_Button*>(w);
 
-    //usare una window con browser per la visualizzazione e basta
-    //per la modifica, rimandare al browser principale
+    int index = menu->value();
+    if (index == 7) return;
 
+    Label label = indexToLabel(index);
+    string lab = labelToString(label);
+    ct->filter->label(lab.c_str());
+
+    ct->bFilter->clear();
+
+    ct->bFilter->textfont(FL_TIMES);
+    ct->bFilter->textcolor(FL_BLACK);
+    ct->bFilter->textsize(21);
+
+    for (const Activity& act : ct->r->getVector()) {
+        if (act.getLabel() == label) {
+            string title = "@b" + labelToColor(act.getLabel()) + act.getTitle();
+            string descr = "   " + getPreview(act) + " ---    Duration: " + timeToString(act.getTime());
+
+            ct->bFilter->add(title.c_str());
+            ct->bFilter->add(descr.c_str());
+        }
+    }
+
+    ct->filter->show();
+}
+
+void filterLineSelect_cb(Fl_Widget *w, void *data) {
+    context* ct = static_cast<context *>(data);
+    Fl_Multi_Browser* bFilter = static_cast<Fl_Multi_Browser *>(w);
+
+    if (Fl::event_clicks()) {
+        int line = bFilter->value();
+        if (line == 0) return;
+        if (line % 2 == 0) line -= 1;
+        string title = bFilter->text(line);
+
+        Activity act;
+        for (auto& a : ct->r->getVector()) {
+            if (strcmp(a.getTitle().c_str(), title.c_str()) == 0) {
+                act = a;
+                break;
+            }
+        }
+
+        ct->ps->ititle->value(act.getTitle().c_str());
+        ct->ps->idescr->value(act.getDescription().c_str());
+        ct->ps->dh->value(act.getHours());
+        ct->ps->dm->value(act.getMinutes());
+        ct->ps->ds->value(act.getSeconds());
+        ct->ps->label->value(labelToIndex(act.getLabel()));
+
+        ct->ps->ititle->deactivate();
+        ct->ps->idescr->deactivate();
+        ct->ps->dh->deactivate();
+        ct->ps->dm->deactivate();
+        ct->ps->ds->deactivate();
+        ct->ps->label->deactivate();
+
+        ct->newAct->child(5)->hide();
+        ct->newAct->child(6)->hide();
+        ct->newAct->child(8)->hide();
+        ct->newAct->child(9)->hide();
+        ct->newAct->show();
+    }
 }

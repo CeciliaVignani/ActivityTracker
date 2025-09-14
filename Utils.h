@@ -46,6 +46,8 @@ struct context {
     bool originalFlag = true;
     vector<Activity> activities;
     vector<Register> registers;
+    Fl_Window* filter;
+    Fl_Multi_Browser* bFilter;
 };
 
 bool operator< (const Date& a, const Date& b);
@@ -58,6 +60,7 @@ Label indexToLabel(int i);
 
 void populateBrowser(context* ct);
 void revPopulateBrowser(context* ct);
+void populateByLabel(context* ct, Label label);
 string getPreview (const Activity& a, int maxLen = 30);
 Register& getOrCreateRegister(context* ct, Date date);
 
@@ -75,6 +78,7 @@ void save_cb(Fl_Widget* w, void* data);
 void modify_canc_cb(Fl_Widget* w, void* data);
 void changeOrder_cb(Fl_Widget* w, void* data);
 void visualizeByLabel_cb(Fl_Widget* w, void* data);
+void filterLineSelect_cb(Fl_Widget* w, void* data);
 
 
 

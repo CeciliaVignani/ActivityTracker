@@ -53,8 +53,7 @@ int main() {
     ct->allButtons.push_back(newAct);
     Fl_Button* removeAct = new Fl_Button(252, 695, 248, 50, "Remove");
     ct->allButtons.push_back(removeAct);
-    Fl_Menu_Button* labelFilter = new Fl_Menu_Button (500, 695, 248, 50, "Filter by Label");
-    labelFilter->add("All");
+    Fl_Menu_Button* labelFilter = new Fl_Menu_Button (500, 695, 248, 50, "Visualize by Label");
     labelFilter->add(labelToString(Label::Generic).c_str());
     labelFilter->add(labelToString(Label::Fun).c_str());
     labelFilter->add(labelToString(Label::Light_Activity).c_str());
@@ -62,6 +61,7 @@ int main() {
     labelFilter->add(labelToString(Label::Wellness).c_str());
     labelFilter->add(labelToString(Label::Work).c_str());
     labelFilter->add(labelToString(Label::Other).c_str());
+    labelFilter->add("All");
     ct->allButtons.push_back(labelFilter);
     Fl_Button* orderBy = new Fl_Button (748, 695, 247, 50, "Order by: longest duration first");
     ct->allButtons.push_back(orderBy);
@@ -125,17 +125,26 @@ int main() {
     popup->end();
     popup->hide();
 
+    Fl_Window* filter = new Fl_Window(750,580);
+    ct->filter = filter;
+    filter->begin();
+    Fl_Multi_Browser* bFilter = new Fl_Multi_Browser(5, 5, 740, 560);
+    ct->bFilter = bFilter;
+    filter->resizable(bFilter);
+    filter->end();
+    filter->hide();
+
     populateBrowser(ct);
 
-    prevDay->callback(prevDay_cb, ct);
-    nextDay->callback(nextDay_cb, ct);
+    prevDay->callback(prevDay_cb, ct);                      //callback complete
+    nextDay->callback(nextDay_cb, ct);                      //callback complete
 
     browser->callback(lineSelect_cb, ct);                   //callback complete
     newAct->callback(newAct_cb, ct);                        //callback complete
     removeAct->callback(removeButton_cb, ct);               //callback complete
     labelFilter->callback(visualizeByLabel_cb, ct);
+    bFilter->callback(filterLineSelect_cb, ct);
     orderBy->callback(changeOrder_cb,ct);                   //callback complete
-    //TODO implementare visualizzazione per etichetta
     window.end();
     window.show();
     return Fl::run();
