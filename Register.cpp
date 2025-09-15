@@ -57,10 +57,9 @@ bool Register::setMonth(int m) {
     if (m < 1 || m > 12) {
         date.month = 1;
         return false;
-    }else {
-        date.month = m;
-        return true;
     }
+    date.month = m;
+    return true;
 }
 
 bool Register::setYear(int y) {
@@ -68,23 +67,22 @@ bool Register::setYear(int y) {
         date.year = 2000;
         return false;
     }
-    else {
-        date.year = y;
-        return true;
-    }
+    date.year = y;
+    return true;
 }
 
 void Register::addActivity(const Activity &act) {
     auto it = activities.begin();
-    bool found = false;
     while (it != activities.end()) {
         if (it->getHours() > act.getHours()) {
             activities.insert(it, act);
             return;
-        }else if (it->getHours() == act.getHours() && it->getMinutes() > act.getMinutes()) {
+        }
+        if (it->getHours() == act.getHours() && it->getMinutes() > act.getMinutes()) {
             activities.insert(it, act);
             return;
-        }else if (it->getHours() == act.getHours() && it->getMinutes() == act.getMinutes() && it->getSeconds() > act.getSeconds()) {
+        }
+        if (it->getHours() == act.getHours() && it->getMinutes() == act.getMinutes() && it->getSeconds() > act.getSeconds()) {
             activities.insert(it, act);
             return;
         }
@@ -97,7 +95,8 @@ bool Register::removeActivity(const int& i) {
     if (i >= 0 && i < activities.size()) {
         activities.erase(activities.begin() + i);
         return true;
-    }else return false;
+    }
+    return false;
 }
 
 int Register::getDay() const {

@@ -77,10 +77,8 @@ bool Activity::setHours(int h) {
         actTime.hours = 0;
         return false;
     }
-    else {
-        actTime.hours = h;
-        return true;
-    }
+    actTime.hours = h;
+    return true;
 }
 
 
@@ -89,10 +87,8 @@ bool Activity::setMinutes(int m) {
         actTime.minutes = 0;
         return false;
     }
-    else {
-        actTime.minutes = m;
-        return true;
-    }
+    actTime.minutes = m;
+    return true;
 }
 
 bool Activity::setSeconds(int s) {
@@ -100,10 +96,8 @@ bool Activity::setSeconds(int s) {
         actTime.seconds = 0;
         return false;
     }
-    else {
-        actTime.seconds = s;
-        return true;
-    }
+    actTime.seconds = s;
+    return true;
 }
 
 string Activity::getTitle() const {
