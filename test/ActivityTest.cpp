@@ -9,7 +9,7 @@ TEST(ActivityTest, LabelAndTimeToStringMethods) {
     Label lab = Label::Sport;
     EXPECT_EQ (labelToString(lab), "Sport");
 
-    Time testTime;
+    Act::Time testTime;
     testTime.hours = 1;
     testTime.minutes = 9;
     testTime.seconds = 22;
@@ -47,7 +47,7 @@ TEST(ActivityTest, SetAndGetAttributes) {
     EXPECT_EQ (activity.getSeconds(), 0);
 
     activity.setTime(0,23,55);
-    Time t = activity.getTime();
+    Act::Time t = activity.getTime();
     EXPECT_EQ (t.hours, 0);
     EXPECT_EQ (t.minutes, 23);
     EXPECT_EQ (t.seconds, 55);
@@ -56,11 +56,11 @@ TEST(ActivityTest, SetAndGetAttributes) {
 
 TEST(ActivityTest, StringsAndLabel) {
     Activity activity;
-    EXPECT_EQ(activity.getLabel(), "Generic");
+    EXPECT_EQ(activity.getLabel(), Label::Generic);
     activity.setTitle("Activity Title");
     activity.setDescription("Activity Description");
     EXPECT_EQ(activity.getTitle(), "Activity Title");
     EXPECT_EQ(activity.getDescription(), "Activity Description");
     activity.setLabel(Label::Wellness);
-    EXPECT_EQ(activity.getLabel(), "Wellness");
+    EXPECT_EQ(activity.getLabel(), Label::Wellness);
 }
